@@ -25,6 +25,15 @@ See LICENSE for the license
 
 #include "khash.h"
 
+#ifdef __VMS
+#ifndef PRIu64
+#define PRIu64      "llu"
+#endif
+#ifndef PRId64
+#define PRId64      "lld"
+#endif
+#endif
+
 #define STREAM_INIT_SIZE 32
 
 #define REACHED_EOF 1

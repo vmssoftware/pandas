@@ -25,6 +25,27 @@ namespace std {
   __inline int isnan(double x) { return _isnan(x); }
   __inline int notnan(double x) { return x == x; }
 }
+#elif defined(__VMS)
+#include <fp.h>
+#undef isnan
+#undef notnan
+#undef signbit
+#if __CRTL_VER < 80500000
+#undef round
+#define round round_imp
+extern "C" double round_imp(double);
+#endif
+namespace std {
+  __inline int isnan(float x) { return fp_classify(x) == FP_NAN; }
+  __inline int notnan(float x) { return !(fp_classify(x) == FP_NAN); }
+  __inline int signbit(float x) { return copysignf(1.0, x) < 0; }
+  __inline int isnan(double x) { return fp_classify(x) == FP_NAN; }
+  __inline int notnan(double x) { return !(fp_classify(x) == FP_NAN); }
+  __inline int signbit(double x) { return copysign(1.0, x) < 0; }
+  __inline int isnan(long double x) { return fp_classify(x) == FP_NAN; }
+  __inline int notnan(long double x) { return !(fp_classify(x) == FP_NAN); }
+  __inline int signbit(long double x) { return copysignl(1.0, x) < 0; }
+}
 #else
 #include <cmath>
 

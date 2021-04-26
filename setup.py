@@ -415,6 +415,11 @@ if is_platform_windows():
     if debugging_symbols_requested:
         extra_compile_args.append("/Z7")
         extra_link_args.append("/DEBUG")
+elif sys.platform == 'OpenVMS':
+    if debugging_symbols_requested or "--debug" in sys.argv:
+        extra_compile_args.append("/LIST")
+        extra_compile_args.append("/SHOW=ALL")
+        extra_compile_args.append("/WARNINGS=DISABLE=ALL")
 else:
     # PANDAS_CI=1 is set by ci/setup_env.sh
     if os.environ.get("PANDAS_CI", "0") == "1":
@@ -469,6 +474,9 @@ if linetrace:
 # cython+numpy version mismatches.
 macros.append(("NPY_NO_DEPRECATED_API", "0"))
 
+if sys.platform =='OpenVMS':
+    macros.append(("__STDC_FORMAT_MACROS", None))
+
 
 # ----------------------------------------------------------------------
 # Specification of Dependencies
@@ -497,7 +505,7 @@ def maybe_cythonize(extensions, *args, **kwargs):
 
     # reuse any parallel arguments provided for compilation to cythonize
     parser = argparse.ArgumentParser()
-    parser.add_argument("--parallel", "-j", type=int, default=1)
+    parser.add_argument("--parallel", "-j", type=int, default=1 if not sys.platform == 'OpenVMS' else 0)
     parsed, _ = parser.parse_known_args()
 
     kwargs["nthreads"] = parsed.parallel
@@ -648,8 +656,20 @@ for name, data in ext_data.items():
 
     sources.extend(data.get("sources", []))
 
-    include = data.get("include", [])
+    include = data.get("include", [])[:]    # fix duplication
     include.append(numpy.get_include())
+
+    extra_compile_args_add = [] # may be different for c and c++
+    if sys.platform == 'OpenVMS':
+        include.append('pandas/_libs')
+        include.append('pandas/_libs/src')
+        if data.get("language", "c") == "c++":
+            pass
+        else:
+            extra_compile_args_add = [
+                '/STAND=C99',
+                '/PREFIX_LIBRARY_ENTRIES=ALL_ENTRIES',
+            ]
 
     obj = Extension(
         f"pandas.{name}",
@@ -658,7 +678,7 @@ for name, data in ext_data.items():
         include_dirs=include,
         language=data.get("language", "c"),
         define_macros=data.get("macros", macros),
-        extra_compile_args=extra_compile_args,
+        extra_compile_args=extra_compile_args + extra_compile_args_add,
         extra_link_args=extra_link_args,
     )
 
@@ -700,9 +720,9 @@ ujson_ext = Extension(
         "pandas/_libs/src/datetime",
         numpy.get_include(),
     ],
-    extra_compile_args=(["-D_GNU_SOURCE"] + extra_compile_args),
+    extra_compile_args=extra_compile_args,  # move _GNU_SOURCE to macros
     extra_link_args=extra_link_args,
-    define_macros=macros,
+    define_macros=([("_GNU_SOURCE", None)] + macros),
 )
 
 

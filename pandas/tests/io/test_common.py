@@ -326,6 +326,7 @@ def mmap_file(datapath):
 
 
 class TestMMapWrapper:
+    @pytest.mark.skipif(os.sys.platform == 'OpenVMS', reason="bus error")
     def test_constructor_bad_file(self, mmap_file):
         non_file = StringIO("I am not a file")
         non_file.fileno = lambda: -1

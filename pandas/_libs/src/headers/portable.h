@@ -13,4 +13,8 @@
 #define toupper_ascii(c) ((((unsigned)(c) - 'a') < 26) ? ((c) & 0x5f) : (c))
 #define tolower_ascii(c) ((((unsigned)(c) - 'A') < 26) ? ((c) | 0x20) : (c))
 
+#ifdef __VMS
+#define isblank(x) ((x) == ' ' || (x) == '\t')
+#endif
+
 #endif

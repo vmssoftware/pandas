@@ -2,6 +2,7 @@ import re
 
 import numpy as np
 import pytest
+import sys
 
 from pandas.core.dtypes.cast import construct_1d_object_array_from_listlike
 
@@ -163,7 +164,7 @@ def test_isna_behavior(idx):
     with pytest.raises(NotImplementedError, match=msg):
         pd.isna(idx)
 
-
+@pytest.mark.skipif(sys.platform == 'OpenVMS', reason="bus error")
 def test_large_multiindex_error():
     # GH12527
     df_below_1000000 = pd.DataFrame(

@@ -531,6 +531,15 @@ def get_versions():
         for i in cfg.versionfile_source.split("/"):
             root = os.path.dirname(root)
     except NameError:
+        if sys.platform == 'OpenVMS':
+            # hardcode version
+            return {
+                "version": "1.2.4",
+                "full-revisionid": 'f' * 40,
+                "dirty": None,
+                "error": None,
+                "date": "2021-04-23T-12:00+00",
+            }
         return {
             "version": "0+unknown",
             "full-revisionid": None,
@@ -550,6 +559,16 @@ def get_versions():
             return versions_from_parentdir(cfg.parentdir_prefix, root, verbose)
     except NotThisMethod:
         pass
+
+    if sys.platform == 'OpenVMS':
+        # hardcode version
+        return {
+            "version": "1.2.4",
+            "full-revisionid": 'f' * 40,
+            "dirty": None,
+            "error": None,
+            "date": "2021-04-23T-12:00+00",
+        }
 
     return {
         "version": "0+unknown",

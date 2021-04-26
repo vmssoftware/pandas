@@ -119,6 +119,21 @@ typedef int64_t JSLONG;
 #define EXPORTFUNCTION
 #endif
 
+#ifdef __VMS
+
+#undef WCHAR_MAX
+#define WCHAR_MAX 0xffff
+
+#ifndef LLONG_MIN
+#define LLONG_MIN __INT64_MIN
+#endif
+
+#ifndef LLONG_MAX
+#define LLONG_MAX __INT64_MAX
+#endif
+
+#endif
+
 #if !(defined(__LITTLE_ENDIAN__) || defined(__BIG_ENDIAN__))
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__

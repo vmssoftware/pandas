@@ -1511,6 +1511,16 @@ def get_versions(verbose=False):
 
     if verbose:
         print("unable to compute version")
+    
+    if sys.platform == 'OpenVMS':
+        # hardcode version
+        return {
+            "version": "1.2.4",
+            "full-revisionid": 'f' * 40,
+            "dirty": None,
+            "error": None,
+            "date": "2021-04-23T-12:00+00",
+        }
 
     return {
         "version": "0+unknown",
