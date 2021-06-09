@@ -31,9 +31,10 @@ namespace std {
 #undef notnan
 #undef signbit
 #if __CRTL_VER < 80500000
+// get py_round from Python
 #undef round
-#define round round_imp
-extern "C" double round_imp(double);
+#define round py_round
+extern "C" double py_round(double);
 #endif
 namespace std {
   __inline int isnan(float x) { return fp_classify(x) == FP_NAN; }
