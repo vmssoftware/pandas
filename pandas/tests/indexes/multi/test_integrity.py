@@ -182,7 +182,7 @@ def test_large_multiindex_error():
     with pytest.raises(KeyError, match=r"^\(3, 0\)$"):
         df_above_1000000.loc[(3, 0), "dest"]
 
-
+@pytest.mark.skipif(sys.platform == 'OpenVMS', reason="bus error")
 def test_million_record_attribute_error():
     # GH 18165
     r = list(range(1000000))
