@@ -419,7 +419,7 @@ elif sys.platform == 'OpenVMS':
     extra_compile_args.append("/WARNINGS=DISABLE=ALL")
     if debugging_symbols_requested or "--debug" in sys.argv:
         extra_compile_args.append("/LIST")
-        extra_compile_args.append("/SHOW=ALL")
+        extra_compile_args.append("/SHOW=EXP")
 else:
     # PANDAS_CI=1 is set by ci/setup_env.sh
     if os.environ.get("PANDAS_CI", "0") == "1":
